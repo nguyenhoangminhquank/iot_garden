@@ -1,0 +1,240 @@
+{
+  "ruleChain": {
+    "name": "IotGardenLogic",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null,
+    "additionalInfo": {
+      "description": ""
+    }
+  },
+  "metadata": {
+    "version": 12,
+    "firstNodeIndex": 0,
+    "nodes": [
+      {
+        "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
+        "name": "getThresholds",
+        "debugSettings": null,
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 1,
+        "configuration": {
+          "tellFailureIfAbsent": false,
+          "fetchTo": "METADATA",
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [
+            "soil_min"
+          ],
+          "serverAttributeNames": [
+            "temp_max",
+            "light_min"
+          ],
+          "latestTsKeyNames": [],
+          "getLatestValueWithTs": false
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 57,
+          "layoutY": 257
+        }
+      },
+      {
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "decidesAction",
+        "debugSettings": {
+          "failuresEnabled": false,
+          "allEnabled": false,
+          "allEnabledUntil": 1794815073080
+        },
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 0,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var out = [];\r\nvar tMax = metadata.ss_temp_max != null ? parseFloat(\r\n    metadata.ss_temp_max) : 35;\r\nvar lMin = metadata.ss_light_min != null ? parseFloat(\r\n    metadata.ss_light_min) : 20;\r\nvar sMin = metadata.shared_soil_min != null ? parseFloat(\r\n    metadata.shared_soil_min) : 30;\r\n\r\nif (msg.temp != null && msg.fan != null) {\r\n    if (msg.temp > tMax && msg.fan != true) out.push(\r\n        'fanOn');\r\n    if (msg.temp < tMax - 3 && msg.fan == true) out.push(\r\n        'fanOff');\r\n}\r\nif (msg.light != null && msg.lamp != null) {\r\n    if (msg.light < lMin && msg.lamp != true) out.push(\r\n        'lampOn');\r\n    if (msg.light > lMin + 15 && msg.lamp == true) out.push(\r\n        'lampOff');\r\n}\r\nif (msg.soil != null && msg.pump != null) {\r\n    if (msg.soil < sMin && msg.pump != 1) out.push(\r\n    'pumpOn');\r\n}\r\nreturn out;",
+          "tbelScript": "function nextRelation(metadata, msg) {\n    return ['one','nine'];\n}\nif(msgType == 'POST_TELEMETRY_REQUEST') {\n    return ['two'];\n}\nreturn nextRelation(metadata, msg);"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 53,
+          "layoutY": 438
+        }
+      },
+      {
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "fanOn",
+        "debugSettings": null,
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 0,
+        "configuration": {
+          "scriptLang": "TBEL",
+          "jsScript": "return {msg: msg, metadata: metadata, msgType: msgType};",
+          "tbelScript": " return { msg: { method: 'setFan', params: true }, metadata: metadata, msgType: msgType };"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 382,
+          "layoutY": 530
+        }
+      },
+      {
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "fanOff",
+        "debugSettings": null,
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 0,
+        "configuration": {
+          "scriptLang": "TBEL",
+          "jsScript": "return {msg: msg, metadata: metadata, msgType: msgType};",
+          "tbelScript": "return {msg: {method: 'setFan', params: false}, metadata: metadata, msgType: msgType};"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 377,
+          "layoutY": 452
+        }
+      },
+      {
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "lampOff",
+        "debugSettings": null,
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 0,
+        "configuration": {
+          "scriptLang": "TBEL",
+          "jsScript": "return {msg: msg, metadata: metadata, msgType: msgType};",
+          "tbelScript": "return {\n    msg: {\n        method: 'setLamp',\n        params: false\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 423,
+          "layoutY": 290
+        }
+      },
+      {
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "lampOn",
+        "debugSettings": {
+          "failuresEnabled": false,
+          "allEnabled": false,
+          "allEnabledUntil": 1794813794506
+        },
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 0,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "return {\n    msg: {\n        method: 'setLamp',\n        params: true\n    },\n    metadata: metadata,\n    msgType: msgType\n};",
+          "tbelScript": ""
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 415,
+          "layoutY": 368
+        }
+      },
+      {
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "pumpOn",
+        "debugSettings": null,
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 0,
+        "configuration": {
+          "scriptLang": "TBEL",
+          "jsScript": "return {msg: msg, metadata: metadata, msgType: msgType};",
+          "tbelScript": "return {\n    msg: {\n        method: 'setPump',\n        params: {\n            on: true,\n            dur: 20\n        }\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 451,
+          "layoutY": 613
+        }
+      },
+      {
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "sendRPC",
+        "debugSettings": {
+          "failuresEnabled": false,
+          "allEnabled": false,
+          "allEnabledUntil": 1794815073080
+        },
+        "singletonMode": false,
+        "queueName": null,
+        "configurationVersion": 0,
+        "configuration": {
+          "timeoutInSeconds": 60
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 756,
+          "layoutY": 427
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "fanOn"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 3,
+        "type": "fanOff"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 4,
+        "type": "lampOff"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 5,
+        "type": "lampOn"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 6,
+        "type": "pumpOn"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 7,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
