@@ -1,0 +1,10 @@
+
+.pio/
+.vscode/
+
+.env
+**/include/config.h
+
+venv/
+__pycache__/
+*.log
