@@ -11,7 +11,7 @@
     }
   },
   "metadata": {
-    "version": 12,
+    "version": 13, 
     "firstNodeIndex": 0,
     "nodes": [
       {
@@ -54,7 +54,7 @@
         "configurationVersion": 0,
         "configuration": {
           "scriptLang": "JS",
-          "jsScript": "var out = [];\r\nvar tMax = metadata.ss_temp_max != null ? parseFloat(\r\n    metadata.ss_temp_max) : 35;\r\nvar lMin = metadata.ss_light_min != null ? parseFloat(\r\n    metadata.ss_light_min) : 20;\r\nvar sMin = metadata.shared_soil_min != null ? parseFloat(\r\n    metadata.shared_soil_min) : 30;\r\n\r\nif (msg.temp != null && msg.fan != null) {\r\n    if (msg.temp > tMax && msg.fan != true) out.push(\r\n        'fanOn');\r\n    if (msg.temp < tMax - 3 && msg.fan == true) out.push(\r\n        'fanOff');\r\n}\r\nif (msg.light != null && msg.lamp != null) {\r\n    if (msg.light < lMin && msg.lamp != true) out.push(\r\n        'lampOn');\r\n    if (msg.light > lMin + 15 && msg.lamp == true) out.push(\r\n        'lampOff');\r\n}\r\nif (msg.soil != null && msg.pump != null) {\r\n    if (msg.soil < sMin && msg.pump != 1) out.push(\r\n    'pumpOn');\r\n}\r\nreturn out;",
+          "jsScript": "var out = [];\r\nvar tempMax = metadata.ss_temp_max != null ? parseFloat(\r\n    metadata.ss_temp_max) : 35;\r\nvar lightMin = metadata.ss_light_min != null ? parseFloat(\r\n    metadata.ss_light_min) : 20;\r\nvar soilMin = metadata.shared_soil_min != null ? parseFloat(\r\n    metadata.shared_soil_min) : 30;\r\n\r\nif (msg.temp != null && msg.fan != null) {\r\n    if (msg.temp > tempMax && msg.fan != true) out.push(\r\n        'fanOn');\r\n    if (msg.temp < tempMax - 3 && msg.fan == true) out.push(\r\n        'fanOff');\r\n}\r\nif (msg.light != null && msg.lamp != null) {\r\n    if (msg.light < lightMin && msg.lamp != true) out.push(\r\n        'lampOn');\r\n    if (msg.light > lightMin + 15 && msg.lamp == true) out.push(\r\n        'lampOff');\r\n}\r\nif (msg.soil != null && msg.pump != null) {\r\n    if (msg.soil < soilMin && msg.pump != 1) out.push(\r\n        'pumpOn');\r\n}\r\nreturn out;",
           "tbelScript": "function nextRelation(metadata, msg) {\n    return ['one','nine'];\n}\nif(msgType == 'POST_TELEMETRY_REQUEST') {\n    return ['two'];\n}\nreturn nextRelation(metadata, msg);"
         },
         "additionalInfo": {
